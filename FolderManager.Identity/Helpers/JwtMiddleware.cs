@@ -2,12 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FolderManager.Identity.Helpers
 {
@@ -48,9 +44,9 @@ namespace FolderManager.Identity.Helpers
                 }, out var validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = int.Parse(jwtToken.Claims.First(c => c.Type == "id").Value);
+                var userId = jwtToken.Claims.First(c => c.Type == "id").Value;
 
-                context.Items["User"] = userService.GetById(userId);
+                context.Items["User"] = userId;
             }
             catch { }
         }

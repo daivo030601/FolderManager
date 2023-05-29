@@ -14,7 +14,7 @@ namespace FolderManager.Identity.Helpers
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            User? user = context.HttpContext.Items["User"] as User;
+            string? user = context.HttpContext.Items["User"] as string;
             if (user == null)
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" })

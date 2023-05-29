@@ -21,19 +21,19 @@ namespace FolderManager.WebApi.Helpers
         {
             var info = new OpenApiInfo
             {
-                Title = "Travel Tour",
+                Title = "Folder Manager",
                 Version = description.ApiVersion.ToString(),
-                Description = "Web Service for Travel Tour.",
+                Description = "Web Service for Folder Manager.",
                 Contact = new OpenApiContact
                 {
                     Name = "IT Department",
-                    Email = "developer@traveltour.xyz",
-                    Url = new Uri("https://traveltour.xyz/support")
+                    Email = "developer@folder.xyz",
+                    Url = new Uri("https://folder.xyz/support")
                 }
             };
 
             if (description.IsDeprecated)
-                info.Description += " <strong>This API version of Travel Tour has been deprecated.</strong>";
+                info.Description += " <strong>This API version of Folder Manager has been deprecated.</strong>";
 
             return info;
         }

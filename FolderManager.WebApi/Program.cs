@@ -1,12 +1,14 @@
 using FolderManager.Application;
 using FolderManager.Data;
 using FolderManager.Data.Context;
+using FolderManager.Domain.Entities;
 using FolderManager.Identity;
 using FolderManager.Identity.Helpers;
 using FolderManager.Shared;
 using FolderManager.WebApi.Extensions;
 using FolderManager.WebApi.Filters;
 using FolderManager.WebApi.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +27,11 @@ ConfigurationManager configuration = builder.Configuration;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddDbContext<FolderManagerDbContext>(option => option.UseSqlServer(configuration.GetConnectionString("DefaultConnect"),
+    b => b.MigrationsAssembly("FolderManager.WebApi")));
+builder.Services.AddIdentity<User, IdentityRole>()
+        .AddEntityFrameworkStores<FolderManagerDbContext>()
+        .AddDefaultTokenProviders();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructureData();
@@ -38,8 +44,7 @@ builder.Services.AddControllers();
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
 builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-builder.Services.AddDbContext<FolderManagerDbContext>(option => option.UseSqlServer(configuration.GetConnectionString("DefaultConnect"),
-    b => b.MigrationsAssembly("FolderManager.WebApi")));
+
 
 builder.Services.AddApiVersioningExtension();
 builder.Services.AddVersionedApiExplorerExtension();

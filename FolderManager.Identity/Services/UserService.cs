@@ -2,6 +2,7 @@
 using FolderManager.Application.Dtos.User;
 using FolderManager.Domain.Entities;
 using FolderManager.Identity.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,34 +19,37 @@ namespace FolderManager.Identity.Services
     {
         private readonly List<User> _users = new List<User>
         {
-            new User
-            {
-                Id = 1,
-                Name = "Test",
-                Username = "Test",
-                Password = "Test123",
-            }
+            
         };
-
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly AuthSettings _authSettings;
 
-        public UserService(IOptions<AuthSettings> appSettings) => _authSettings = appSettings.Value;
-
-        public AuthenticateResponse? Authenticate(AuthenticateRequest model)
+        public UserService(UserManager<User> userManager,
+            SignInManager<User> signInManager, IOptions<AuthSettings> appSettings) 
         {
-            var user = _users.SingleOrDefault(u => u.Username == model.Username && u.Password == model.Password);
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _authSettings = appSettings.Value;
+        }
 
-            if (user == null)
+        public async Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model)
+        {
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
+            if (!result.Succeeded)
+            {
                 return null;
+            }
 
+            var user = await _userManager.FindByNameAsync(model.Username);
             var token = GenerateJwtToken(user);
-
             return new AuthenticateResponse(user, token);
         }
 
         private string GenerateJwtToken(User user)
         {
             byte[] key = Encoding.ASCII.GetBytes(_authSettings.Secret);
+            
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
@@ -59,9 +63,27 @@ namespace FolderManager.Identity.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public User GetById(int id)
+        public async Task<User> GetById(string id)
         {
-            return _users.FirstOrDefault(u => u.Id == id);
+            return await _userManager.FindByIdAsync(id);
+        }
+
+        public async Task<IdentityResult> SignUpAsync(SignUpRequest model)
+        {
+            try
+            {
+
+                var user = new User
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    UserName = model.UserName
+                };
+                return await _userManager.CreateAsync(user, model.Password);
+            } catch(Exception ex)
+            {
+                throw ex.InnerException;
+            }
         }
     }
 }

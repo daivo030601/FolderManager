@@ -1,5 +1,6 @@
 ﻿using FolderManager.Application.Dtos.User;
 using FolderManager.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace FolderManager.Application.Common.Interfaces
 {
     public interface IUserService
     {
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
-        User GetById(int id);
+        Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model);
+        Task<IdentityResult> SignUpAsync(SignUpRequest model);
+        Task<User> GetById(string id);
     }
 }

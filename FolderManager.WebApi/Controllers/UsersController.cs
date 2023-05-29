@@ -17,10 +17,10 @@ namespace FolderManager.WebApi.Controllers
             _userService = userService;
         }
 
-        [HttpPost("auth")]
-        public IActionResult Authenticate([FromBody] AuthenticateRequest request)
+        [HttpPost("Auth")]
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request)
         {
-            var response = _userService.Authenticate(request);
+            var response = await _userService.Authenticate(request);
             if (response == null)
             {
                 return BadRequest(new
@@ -29,6 +29,17 @@ namespace FolderManager.WebApi.Controllers
                 });
             }
             return Ok(response);
+        }
+
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignIn(SignUpRequest signInModel)
+        {
+            var result = await _userService.SignUpAsync(signInModel);
+            if (result.Succeeded)
+            {
+                return Ok(result.Succeeded);
+            }
+            return BadRequest();
         }
     }
 }

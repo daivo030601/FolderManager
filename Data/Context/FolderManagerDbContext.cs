@@ -9,10 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FolderManager.Data.Context
 {
-    public class FolderManagerDbContext : DbContext, IFolderManagerDbContext
+    public class FolderManagerDbContext : IdentityDbContext<User>, IFolderManagerDbContext
     {
         private readonly IDateTime _dateTime;
         private IDbContextTransaction _currentTransaction;
